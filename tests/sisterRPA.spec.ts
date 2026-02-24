@@ -54,3 +54,27 @@ test('Property Data for company person', { timeout: 200000 }, async () => {
     'Expected to find at least one property',
   );
 });
+
+test('Empty result for non existing fiscal code', { timeout: 200000 }, async () => {
+  const nonExistingFiscalCode = import.meta.env.VITE_TEST_FISCAL_CODE_INDIVIDUAL_PERSON_WITHOUT_RESULTS;
+  const sisterUsername = import.meta.env.VITE_TEST_SISTER_USERNAME;
+  const sisterPassword = import.meta.env.VITE_TEST_SISTER_PASSWORD;
+  const province = import.meta.env.VITE_TEST_PROVINCE_INDIVIDUAL_PERSON;
+
+  if (!sisterUsername || !sisterPassword || !province) {
+    throw new Error('Missing environment variables for the test');
+  }
+
+  const sisterRPA = new SisterRobotProcessAutomationManager();
+  const result = await sisterRPA.getRealEstateData({
+    ivaOrFiscalCode: nonExistingFiscalCode,
+    province,
+    personType: 'individual',
+    security: {
+      username: sisterUsername,
+      password: sisterPassword,
+    },
+  });
+
+  assert.strictEqual(result.length, 0, 'Expected no properties to be found');
+});

@@ -1,5 +1,8 @@
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+
+const puppeteer = require('puppeteer-extra')
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 import { Browser, Cookie, Page } from 'puppeteer';
 
 export type RealEstatesTableRow = {
@@ -121,11 +124,27 @@ export default class SisterRobotProcessAutomationManager {
         });
 
         //Selezione codice fiscale o partita iva
-        await this.searchPersonOrCompany({
+        const searchResult = await this.searchPersonOrCompany({
           page,
           ivaOrFiscalCode,
           personType,
         });
+
+        if (searchResult.success === false) {
+          console.info(
+            `[${new Date().toISOString()}] SISTER RPA for vat ${ivaOrFiscalCode} in province ${province} completed successfully. No person found with the provided fiscal code or vat number.`,
+          );
+
+          await this.logoutSister({
+            page,
+          });
+
+          if (!providedBrowser) {
+            await browser.close();
+          }
+
+          return [];
+        }
 
         // Estrazione dati immobiliari
         const realEstateData = await this.extractRealEstateDataFromTable({
@@ -341,7 +360,9 @@ export default class SisterRobotProcessAutomationManager {
     page: Page;
     personType: PersonType;
     ivaOrFiscalCode: string;
-  }): Promise<void> {
+  }): Promise<{
+    success: boolean;
+  }> {
     const { page, ivaOrFiscalCode, personType } = params;
 
     try {
@@ -385,6 +406,43 @@ export default class SisterRobotProcessAutomationManager {
         retryMs: 500,
       });
 
+      //*[@id="colonna1"]/div[2]/fieldset/div/strong[5]
+      const numberOfPersonFound = await page.evaluate(() => {
+        const div = document.querySelector('div.riepilogo');
+
+        if (!div) {
+          throw new Error('Summary div not found');
+        }
+
+        const walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT);
+        
+        let node: Node | null = walker.nextNode();
+        while ((node = walker.nextNode())) {
+          if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+            if (node.textContent.includes('Omonimi individuati')) {
+              let next = node.nextSibling;
+              while (next) {
+                if (next.nodeType === Node.ELEMENT_NODE && next.nodeName === 'STRONG') {
+                  return next.textContent ? next.textContent.trim() : '';
+                }
+                next = next.nextSibling;
+              }
+            }
+          }
+        }
+        return null;
+      });
+
+      if (!numberOfPersonFound) {
+        throw new Error('Number of person found not found in the page');
+      }
+
+      if (numberOfPersonFound == '' || numberOfPersonFound === '0') {
+        return {
+          success: false
+        }
+      }
+
       await page.waitForSelector(selectFirstResultXPath);
       await page.click(selectFirstResultXPath);
 
@@ -401,6 +459,10 @@ export default class SisterRobotProcessAutomationManager {
         retryCount: 5,
         retryMs: 500,
       });
+
+      return {
+        success: true
+      }
     } catch (error: unknown) {
       let localError: Error;
 

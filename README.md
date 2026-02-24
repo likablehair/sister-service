@@ -19,9 +19,20 @@ Next, configure the .env file (by following the example) and set the following v
   <li><strong>VITE_TEST_SISTER_PASSWORD</strong>: the password of the SISTER portal </li>
   <li><strong>VITE_TEST_PROVINCE_INDIVIDUAL_PERSON</strong>: the province where you wish to search for properties owned by the individual </li>
   <li><strong>VITE_TEST_FISCAL_CODE_INDIVIDUAL_PERSON</strong>: the fiscal code of the individual </li>
+  <li><strong>VITE_TEST_FISCAL_CODE_INDIVIDUAL_PERSON_WITHOUT_RESULTS</strong>: the fiscal code of the individual that has no real estate in the selected province </li>
   <li><strong>VITE_TEST_PROVINCE_COMPANY_PERSON</strong>: the province where you wish to search for properties owned by the company </li>
   <li><strong>VITE_TEST_FISCAL_CODE_COMPANY_PERSON</strong>: the VAT number of the company </li>
 </ul>
+
+## Installation
+
+Install the package along with its required peer dependencies:
+
+```bash
+npm install @likable-hair/sister-service puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+```
+
+> Puppeteer is listed as a peer dependency because it downloads a Chromium binary (~300MB) on install. This gives you full control over the version and avoids duplicate binaries if you already use Puppeteer in your project.
 
 ## Requirements
 
@@ -34,6 +45,7 @@ Next, configure the .env file (by following the example) and set the following v
   <li>
     <strong>Access to SISTER portal</strong>: You must have valid credentials (username and password) to access the SISTER portal.
   </li>
+  <li>ESM projects (`"type": "module"`) are fully supported</li>
 </ul>
 
 ## Usage
