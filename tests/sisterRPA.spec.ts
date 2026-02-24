@@ -23,7 +23,6 @@ test('Property Data for individual person', { timeout: 200000 }, async () => {
     },
   });
 
-  console.log('Real Estate Data for Individual Person:', realEstateData);
   assert.ok(
     realEstateData.length > 0,
     'Expected to find at least one property',
@@ -50,7 +49,6 @@ test('Property Data for company person', { timeout: 200000 }, async () => {
     },
   });
 
-  console.log('Real Estate Data for Company Person:', realEstateData);
   assert.ok(
     realEstateData.length > 0,
     'Expected to find at least one property',
