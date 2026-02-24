@@ -1,8 +1,8 @@
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-const puppeteer = require('puppeteer-extra')
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 import { Browser, Cookie, Page } from 'puppeteer';
 
 export type RealEstatesTableRow = {
@@ -415,14 +415,17 @@ export default class SisterRobotProcessAutomationManager {
         }
 
         const walker = document.createTreeWalker(div, NodeFilter.SHOW_TEXT);
-        
+
         let node: Node | null = walker.nextNode();
         while ((node = walker.nextNode())) {
           if (node.nodeType === Node.TEXT_NODE && node.textContent) {
             if (node.textContent.includes('Omonimi individuati')) {
               let next = node.nextSibling;
               while (next) {
-                if (next.nodeType === Node.ELEMENT_NODE && next.nodeName === 'STRONG') {
+                if (
+                  next.nodeType === Node.ELEMENT_NODE &&
+                  next.nodeName === 'STRONG'
+                ) {
                   return next.textContent ? next.textContent.trim() : '';
                 }
                 next = next.nextSibling;
@@ -439,8 +442,8 @@ export default class SisterRobotProcessAutomationManager {
 
       if (numberOfPersonFound == '' || numberOfPersonFound === '0') {
         return {
-          success: false
-        }
+          success: false,
+        };
       }
 
       await page.waitForSelector(selectFirstResultXPath);
@@ -461,8 +464,8 @@ export default class SisterRobotProcessAutomationManager {
       });
 
       return {
-        success: true
-      }
+        success: true,
+      };
     } catch (error: unknown) {
       let localError: Error;
 
