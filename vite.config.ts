@@ -6,8 +6,8 @@ import dts from 'vite-plugin-dts';
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    lib: { 
-      entry: resolve(__dirname, 'src/main.ts'), 
+    lib: {
+      entry: resolve(__dirname, 'src/main.ts'),
       formats: ['es', 'cjs'],
       fileName: (format) => `sister-service.${format === 'cjs' ? 'cjs' : 'js'}`,
     },
@@ -33,7 +33,7 @@ export default defineConfig({
       // make plugin emit an index.d.ts in dist and add a types entry
       insertTypesEntry: true,
       outDir: 'dist',
-      rollupTypes: true
-    })
+      rollupTypes: true,
+    }),
   ],
 });
